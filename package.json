@@ -1,0 +1,10 @@
+
+{
+  "name": "vibrant-impact-api",
+  "version": "1.0.0",
+  "description": "Serverless functions for Vibrant Impact Poster Generator.",
+  "main": "api/fetch-quotes.js",
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}

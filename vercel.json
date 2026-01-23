@@ -1,0 +1,17 @@
+{
+  "functions": {
+    "api/*.js": {
+      "runtime": "@vercel/node@2.0.1"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/fetch-quotes",
+      "destination": "/api/fetchQuotes.js"
+    },
+    {
+      "source": "/api/fetch-emojis",
+      "destination": "/api/fetchEmojis.js"
+    }
+  ]
+}
