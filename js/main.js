@@ -317,8 +317,7 @@ function renderCanvas() {
             color: ${emoji.color};
             transform: translate(-50%, -50%) rotate(${emoji.rotation}deg);
             cursor: pointer;
-            user-select: none;
-            ${emoji.id === selectedEmojiId ? 'outline: 2px dashed #a78bfa; outline-offset: 5px;' : ''}`;
+            user-select: none;`;
         emojiEl.onclick = e => {
             e.stopPropagation();
             selectEmojiLayer(emoji.id);
