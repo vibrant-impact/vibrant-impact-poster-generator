@@ -537,29 +537,32 @@ function renderSidebarControls() {
         const favs = new Set(favoriteFonts);
 
     if (favs.size > 0) {
-      const favGroup = document.createElement('optgroup');
-      favGroup.label = '⭐ Favorites';
-      availableFonts
-        .filter(f => favs.has(f))
-        .forEach(f => {
-          const opt = new Option(f, f);
-          favGroup.appendChild(opt);
-        });
-      fontSelect.appendChild(favGroup);
+        const favGroup = document.createElement('optgroup');
+        favGroup.label = '⭐ Favorites';
+        availableFonts
+            .filter(f => favs.has(f))
+            .forEach(f => {
+                const opt = new Option(f, f);
+                if (f === currentDesignState.fontFamily) opt.selected = true;
+                favGroup.appendChild(opt);
+            });
+        fontSelect.appendChild(favGroup);
 
-      const sep = new Option('— All Fonts —');
-      sep.disabled = true;
-      fontSelect.appendChild(sep);
+        const sep = new Option('──────────');
+        sep.disabled = true;
+        fontSelect.appendChild(sep);
     }
 
         availableFonts
-        .filter(f => !favs.has(f))
-        .forEach(f => {
-            const opt = new Option(f, f);
-            if (f === currentDesignState.fontFamily) opt.selected = true;
-            fontSelect.appendChild(opt);
-        });
+          .filter(f => !favs.has(f))
+          .forEach(f => {
+              const opt = new Option(f, f);
+              if (f === currentDesignState.fontFamily) opt.selected = true;
+              fontSelect.appendChild(opt);
+          });
+
         fontSelect.value = currentDesignState.fontFamily;
+        syncFavoriteToggle();
   }
 
   // Section 3.11 Emoji UI Sync
@@ -933,13 +936,14 @@ function loadFavorites() {
 }
 
 function toggleFontFavorite(fontFamily) {
-  const index = favoriteFonts.indexOf(fontFamily);
-  if (index > -1) {
-    favoriteFonts.splice(index, 1);
-  } else {
-    favoriteFonts.push(fontFamily);
-  }
-  saveFavorites();
+    const index = favoriteFonts.indexOf(fontFamily);
+    if (index > -1) {
+        favoriteFonts.splice(index, 1);
+    } else {
+        favoriteFonts.push(fontFamily);
+    }
+    saveFavorites();
+    syncFavoriteToggle();
 }
 
 function saveFavorites() {
@@ -1595,14 +1599,14 @@ function loadDesignForEdit(id) {
 // ==========================================
 
 function syncFavoriteToggle() {
-  const favoriteToggleBtn = document.querySelector('.favoriteToggleBtn');
-  if (favoriteToggleBtn && currentDesignState.fontFamily) {
-    const isFavorite = favoriteFonts.includes(currentDesignState.fontFamily);
-    favoriteToggleBtn.title = isFavorite
-      ? `Click to remove ${currentDesignState.fontFamily} from favorites`
-      : `Click to add ${currentDesignState.fontFamily} to favorites`;
-    favoriteToggleBtn.textContent = isFavorite ? '⭐' : '☆';
-  }
+    const favoriteToggleBtn = document.querySelector('.favoriteToggleBtn');
+    if (favoriteToggleBtn && currentDesignState.fontFamily) {
+        const isFavorite = favoriteFonts.includes(currentDesignState.fontFamily);
+        favoriteToggleBtn.textContent = isFavorite ? '★' : '☆';
+        favoriteToggleBtn.title = isFavorite 
+            ? `Remove ${currentDesignState.fontFamily} from favorites` 
+            : `Add ${currentDesignState.fontFamily} to favorites`;
+    }
 }
 
 // ==========================================
