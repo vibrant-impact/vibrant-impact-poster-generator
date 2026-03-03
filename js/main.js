@@ -152,8 +152,6 @@ function renderCanvas() {
     } else {
         // GRADIENT LOGIC
         backgroundLayer.style.backgroundColor = 'transparent';
-        backgroundLayer.style.backgroundSize = '100% 100%'; 
-        backgroundLayer.style.backgroundPosition = '0% 0%';
         
         let colorString = "";
         if (state.gradientMode === 'twoStop') {
@@ -164,7 +162,10 @@ function renderCanvas() {
                 : `${state.gradientStart}, ${state.gradientEnd}`;
         }
 
-        backgroundLayer.style.backgroundImage = `linear-gradient(${state.gradientDirection}, ${colorString})`;
+        const isRadial = state.gradientDirection.includes('circle');
+        const gradientFunc = isRadial ? 'radial-gradient' : 'linear-gradient';
+        
+        backgroundLayer.style.backgroundImage = `${gradientFunc}(${state.gradientDirection}, ${colorString})`;
     }
 
     textContainer.style.backgroundColor = getRgbaFromHex(state.textBoxBackgroundColor, state.overlayOpacity);
@@ -453,7 +454,8 @@ function renderSidebarControls() {
             gradColors: document.getElementById('gradientColorControls'),
             image: document.getElementById('imageControls'),
             gMode: document.getElementById('gradientModeControls'),
-            palette: document.getElementById('paletteSection')
+            palette: document.getElementById('paletteSection'),
+            direction: document.getElementById('gradientDirectionControls')
     };
 
     if (controls.solid) controls.solid.style.display = type === 'solid' ? 'block' : 'none';
@@ -461,7 +463,8 @@ function renderSidebarControls() {
     if (controls.image) controls.image.style.display = type === 'image' ? 'block' : 'none';
     if (controls.gMode) controls.gMode.style.display = isGradient ? 'block' : 'none';
     if (controls.palette) controls.palette.style.display = isGradient && gMode === 'palette' ? 'block' : 'none';
-
+    if (controls.direction) controls.direction.style.display = isGradient ? 'block' : 'none';
+    
     const bgSolid = document.getElementById('bgTypeSolid');
     const bgGrad = document.getElementById('bgTypeGradient');
     const bgImg = document.getElementById('bgTypeImage');
@@ -680,21 +683,25 @@ function resetBoxToDefaults() {
 // ==========================================
 
 function previewBackgroundMode(type) {
+  updateDesignState('backgroundType', type);
   const solidControls = document.getElementById('solidControls');
   const imageControls = document.getElementById('imageControls');
   const gradientModeControls = document.getElementById('gradientModeControls');
   const paletteSection = document.getElementById('paletteSection');
   const gradientColorControls = document.getElementById('gradientColorControls');
+  const directionControls = document.getElementById('gradientDirectionControls');
   if (solidControls) solidControls.style.display = type === 'solid' ? 'block' : 'none';
   if (imageControls) imageControls.style.display = type === 'image' ? 'block' : 'none';
   if (gradientModeControls) gradientModeControls.style.display = type === 'gradient' ? 'block' : 'none';
   if (type !== 'gradient') {
     if (paletteSection) paletteSection.style.display = 'none';
     if (gradientColorControls) gradientColorControls.style.display = 'none';
+    if (directionControls) {directionControls.style.display = type === 'gradient' ? 'block' : 'none';}
   }
   document.getElementById('bgTypeSolid')?.classList.toggle('selected', type === 'solid');
   document.getElementById('bgTypeGradient')?.classList.toggle('selected', type === 'gradient');
   document.getElementById('bgTypeImage')?.classList.toggle('selected', type === 'image');
+  renderSidebarControls();
 }
 
 function applyTwoColorGradient() {
