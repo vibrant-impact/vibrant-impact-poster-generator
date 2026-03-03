@@ -508,27 +508,31 @@ function renderSidebarControls() {
     const quotesList = document.getElementById('quotesList');
     if (quotesList) {
         quotesList.innerHTML = '';
+        const searchTerm = document.getElementById('quoteSearchFilter')?.value.toLowerCase().trim() || '';
+        
         if (quotes.length === 0) {
-            quotesList.innerHTML = '<p>No quotes found.</p>';
+            quotesList.innerHTML = '<p>No matching quotes or authors found.</p>';
         } else {
-            const searchTerm = quoteSearch?.value.toLowerCase().trim() || '';
             quotes.forEach(q => {
-            const item = document.createElement('div');
-            const isActive = q.quoteText === currentDesignState.quoteText;
-            item.className = `quoteItem ${isActive ? 'activeQuote' : ''}`;
+                const item = document.createElement('div');
+                const isActive = q.quoteText === currentDesignState.quoteText;
+                item.className = `quoteItem ${isActive ? 'activeQuote' : ''}`;
 
-            const p = document.createElement('p');
-            p.appendChild(document.createTextNode('"'));
-            highlightText(q.quoteText, searchTerm).forEach(node => p.appendChild(node));
-            p.appendChild(document.createTextNode('"'));
+                // Highlight matches in Quote Text
+                const p = document.createElement('p');
+                p.appendChild(document.createTextNode('"'));
+                highlightText(q.quoteText, searchTerm).forEach(node => p.appendChild(node));
+                p.appendChild(document.createTextNode('"'));
 
-            const small = document.createElement('small');
-            small.textContent = `— ${q.authorName}`;
+                // Highlight matches in Author Name
+                const small = document.createElement('small');
+                small.appendChild(document.createTextNode('— '));
+                highlightText(q.authorName, searchTerm).forEach(node => small.appendChild(node));
 
-            item.appendChild(p);
-            item.appendChild(small);
-            item.onclick = () => selectQuote(q.quoteText.replace(/'/g, "\\'"), q.authorName.replace(/'/g, "\\'"));
-            quotesList.appendChild(item);
+                item.appendChild(p);
+                item.appendChild(small);
+                item.onclick = () => selectQuote(q.quoteText.replace(/'/g, "\\'"), q.authorName.replace(/'/g, "\\'"));
+                quotesList.appendChild(item);
             });
         }
     }
@@ -994,9 +998,13 @@ function filterQuotes(searchTerm) {
     quotes = getRandomUniqueItems(allQuotes, 3);
   } else {
     const safe = escapeRegex(term);
-    const regex = new RegExp(`\\b${safe}\\b`, 'gi');
-    const allMatches = allQuotes.filter(q => regex.test(q.quoteText) || regex.test(q.authorName));
-    quotes = getRandomUniqueItems(allMatches, 3);
+    const regex = new RegExp(safe, 'gi'); // Removed \b to allow partial word matching
+    
+    const allMatches = allQuotes.filter(q => 
+        regex.test(q.quoteText) || regex.test(q.authorName)
+    );
+    
+    quotes = term.length > 1 ? allMatches.slice(0, 10) : getRandomUniqueItems(allMatches, 3);
   }
 
   renderSidebarControls();
@@ -1059,17 +1067,16 @@ async function handleFetchQuotes(tag) {
   }
 
   const fetchedQuotes = await VIBRANT_API.fetchQuotes(tag);
-  allQuotes = fetchedQuotes;
+  allQuotes = fetchedQuotes; 
 
   const filterInput = document.getElementById('quoteSearchFilter');
-  const clearBtn = document.getElementById('clearQuoteSearch');
-  const regenBtn = document.getElementById('regenSearch');
-  if (filterInput) filterInput.value = '';
-  if (clearBtn) clearBtn.style.display = 'none';
-  if (regenBtn) regenBtn.style.display = 'none';
-
-  quotes = getRandomUniqueItems(allQuotes, 3);
-  renderSidebarControls();
+  
+  if (filterInput && filterInput.value.trim() !== '') {
+      filterQuotes(filterInput.value);
+  } else {
+      quotes = getRandomUniqueItems(allQuotes, 3);
+      renderSidebarControls();
+  }
 }
 
 // ==========================================
