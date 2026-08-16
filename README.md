@@ -1,6 +1,6 @@
-# Vibrant Impact: Sacred Geometry Poster Generator
+# Vibrant Impact: Social Media Poster Generator
 
-A specialized web application designed for graphic designers and spiritual enthusiasts to generate high-frequency posters. This project serves as a technical deep-dive into **Serverless Functions**, **DOM Manipulation**, and **Secure API Integration**.
+A specialized web application designed for graphic designers and social media marketers to generate high-frequency posters. This project serves as a technical deep-dive into **Serverless Functions**, **DOM Manipulation**, and **Secure API Integration**.
 
 ## 🚀 [Launch Live App (Vercel)](https://vibrant-impact-poster-generator.vercel.app/)
 
